@@ -43,6 +43,7 @@ class Player extends HTMLElement {
     const previous = this.shadowRoot.querySelector("#mu-previous")
     const cover = this.shadowRoot.querySelector("#mu-cover")
     const seekbar = this.shadowRoot.querySelector("#mu-seek input")
+    const seekbarVisible = this.shadowRoot.querySelector("#mu-seeked")
     const time = this.shadowRoot.querySelector("#mu-time")
     const shadowDom = this.shadowRoot
     const SVG = {
@@ -121,12 +122,16 @@ class Player extends HTMLElement {
     }
 
     function syncTimeAndSeekbar() {
-      seekbar.value = Math.floor((audio.currentTime / audio.duration) * 100)
-      time.innerHTML = `${Math.floor(audio.currentTime / 60)}:${Math.floor(
-        audio.currentTime % 60
-      )} / ${Math.floor(audio.duration / 60)}:${Math.floor(
-        audio.duration % 60
-      )}`
+      const min_currentTime = Math.floor(audio.currentTime / 60)
+      const sec_currentTIme = Math.floor(audio.currentTime % 60)
+      const min_duration = Math.floor(audio.duration / 60)
+      const sec_duration = Math.floor(audio.duration % 60)
+      let timestr = `${min_currentTime}:${sec_currentTIme} / ${min_duration}:${sec_duration}`
+      if (timestr.toLocaleLowerCase().includes("nan")) timestr = "0:00 / 0:00"
+      time.innerHTML = timestr
+      seekbar.value =
+        Math.floor((audio.currentTime / audio.duration) * 100) || 0
+      seekbarVisible.style.width = `${seekbar.value || 0}%`
     }
 
     function nextTrackIfAvailable(path, canPlay = true) {
@@ -134,7 +139,6 @@ class Player extends HTMLElement {
       if (!path) return
       audio.src = path
       const title = path.split("/").pop().split(".")[0]
-      console.log(title)
       shadowDom.querySelector("#mu-title").innerHTML = title
       shadowDom.querySelector("#mu-artist").innerHTML = "Unknown"
       if (canPlay) playMusic()

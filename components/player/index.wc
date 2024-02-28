@@ -35,6 +35,7 @@
     </div>
     <div class="mu-seek" id="mu-seek">
       <input type="range" class="mu-seek-bar" value="0" />
+      <span id="mu-seeked"></span>
     </div>
   </div>
   <audio id="mu-audio" class="mu-audio">
